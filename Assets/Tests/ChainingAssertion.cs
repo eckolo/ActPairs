@@ -128,7 +128,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Assets.Editor.UnitTest
+namespace Assets.Tests
 {
     #region Extensions
 

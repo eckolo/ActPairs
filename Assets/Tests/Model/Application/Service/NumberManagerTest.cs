@@ -1,10 +1,10 @@
-using Assets.Src.Model.Application.Service;
-using Assets.Editor.UnitTest.Mock.Model.Value;
+using Assets.Src.Model.Application.Value.Mock;
+using Assets.Tests;
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Assets.Editor.UnitTest.Model.Application.Service
+namespace Assets.Src.Model.Application.Service.Test
 {
     /// <summary>
     /// <see cref="NumberManager"/>クラスのテスト

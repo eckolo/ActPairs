@@ -1,8 +1,7 @@
-﻿using Assets.Src.Model.Application.Value;
-using System;
+﻿using System;
 using UnityEngine;
 
-namespace Assets.Editor.UnitTest.Mock.Model.Value
+namespace Assets.Src.Model.Application.Value.Mock
 {
     /// <summary>
     /// ただ値を持つだけのクラスのモック
