@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Assets.Src.Model.Application.Service
 {
+    /// <summary>
+    /// イージング動作の実計算処理サービス
+    /// </summary>
     public static class EasingManager
     {
         public static Fraction In(this Easing easing, int time, Fraction min, Fraction max)
