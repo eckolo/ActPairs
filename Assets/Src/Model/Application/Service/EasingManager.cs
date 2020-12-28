@@ -9,66 +9,133 @@ namespace Assets.Src.Model.Application.Service
     /// </summary>
     public static class EasingManager
     {
-        public static Fraction In(this Easing easing, int time, Fraction min, Fraction max)
-            => In(easing, time, max - min) + min;
-        public static Fraction SubIn(this Easing easing, int time, Fraction min, Fraction max)
-            => SubIn(easing, time, max - min) + min;
-        public static Fraction Out(this Easing easing, int time, Fraction min, Fraction max)
-            => Out(easing, time, max - min) + min;
-        public static Fraction SubOut(this Easing easing, int time, Fraction min, Fraction max)
-            => SubOut(easing, time, max - min) + min;
-        public static Fraction InOut(this Easing easing, int time, Fraction min, Fraction max)
-            => InOut(easing, time, max - min) + min;
-        public static Fraction SubInOut(this Easing easing, int time, Fraction min, Fraction max)
-            => SubInOut(easing, time, max - min) + min;
+        /// <summary>
+        /// イージングの途中経過取得
+        /// </summary>
+        /// <param name="easing">イージング処理定義パラメータ</param>
+        /// <param name="time">経過時間</param>
+        /// <param name="min">最小値</param>
+        /// <param name="max">最大値</param>
+        /// <returns>途中経過値</returns>
+        public static Fraction GetProgress(
+            this Easing easing,
+            int time,
+            Fraction min,
+            Fraction max)
+            => easing.GetProgress(time, max - min) + min;
+        /// <summary>
+        /// イージングの途中経過取得
+        /// </summary>
+        /// <param name="easing">イージング処理定義パラメータ</param>
+        /// <param name="time">経過時間</param>
+        /// <param name="max">最大値</param>
+        /// <returns>途中経過値</returns>
+        public static Fraction GetProgress(
+            this Easing easing,
+            int time,
+            Fraction max = null)
+            => (easing.pattern, easing.bias).GetProgress(time, easing.timeRequired, max, easing.isIncrease);
+        /// <summary>
+        /// イージングの途中経過取得
+        /// </summary>
+        /// <param name="easingType">イージングの挙動タイプ</param>
+        /// <param name="time">経過時間</param>
+        /// <param name="limit">所要時間</param>
+        /// <param name="min">最小値</param>
+        /// <param name="max">最大値</param>
+        /// <param name="isIncrease">値が増加するか否か</param>
+        /// <returns>途中経過値</returns>
+        public static Fraction GetProgress(
+            this (Easing.Pattern pattern, Easing.Bias bias) easingType,
+            int time,
+            int limit,
+            Fraction min,
+            Fraction max,
+            bool isIncrease = false)
+            => easingType.GetProgress(time, limit, max - min, isIncrease) + min;
+        /// <summary>
+        /// イージングの途中経過取得
+        /// </summary>
+        /// <param name="easingType">イージングの挙動タイプ</param>
+        /// <param name="time">経過時間</param>
+        /// <param name="limit">所要時間</param>
+        /// <param name="max">最大値</param>
+        /// <param name="isIncrease">値が増加するか否か</param>
+        /// <returns>途中経過値</returns>
+        public static Fraction GetProgress(
+            this (Easing.Pattern pattern, Easing.Bias bias) easingType,
+            int time,
+            int limit,
+            Fraction max = null,
+            bool isIncrease = false)
+        {
+            var increased = easingType.ClacProgress(time, limit, max);
+            var maxNonNull = max ?? 1f;
 
-        public static Fraction In(this Easing easing, int time, Fraction max = null)
-            => In(easing.pattern, time, easing.timeRequired, max);
-        public static Fraction SubIn(this Easing easing, int time, Fraction max = null)
-            => SubIn(easing.pattern, time, easing.timeRequired, max);
-        public static Fraction Out(this Easing easing, int time, Fraction max = null)
-            => Out(easing.pattern, time, easing.timeRequired, max);
-        public static Fraction SubOut(this Easing easing, int time, Fraction max = null)
-            => SubOut(easing.pattern, time, easing.timeRequired, max);
-        public static Fraction InOut(this Easing easing, int time, Fraction max = null)
-            => InOut(easing.pattern, time, easing.timeRequired, max);
-        public static Fraction SubInOut(this Easing easing, int time, Fraction max = null)
-            => SubInOut(easing.pattern, time, easing.timeRequired, max);
+            var progress = isIncrease ? increased : maxNonNull - increased;
+            return progress;
+        }
+        /// <summary>
+        /// イージングの途中経過取得
+        /// </summary>
+        /// <param name="easingType">イージングの挙動タイプ</param>
+        /// <param name="time">経過時間</param>
+        /// <param name="limit">所要時間</param>
+        /// <param name="isIncrease">値が増加するか否か</param>
+        /// <returns>途中経過値</returns>
+        public static Fraction GetProgress(
+            this (Easing.Pattern pattern, Easing.Bias bias) easingType,
+            int time,
+            int limit,
+            bool isIncrease)
+            => easingType.GetProgress(time, limit, null, isIncrease);
 
-        public static Fraction In(this Easing.Pattern easingType, int time, int limit, Fraction min, Fraction max)
-            => In(easingType, time, limit, max - min) + min;
-        public static Fraction SubIn(this Easing.Pattern easingType, int time, int limit, Fraction min, Fraction max)
-            => SubIn(easingType, time, limit, max - min) + min;
-        public static Fraction Out(this Easing.Pattern easingType, int time, int limit, Fraction min, Fraction max)
-            => Out(easingType, time, limit, max - min) + min;
-        public static Fraction SubOut(this Easing.Pattern easingType, int time, int limit, Fraction min, Fraction max)
-            => SubOut(easingType, time, limit, max - min) + min;
-        public static Fraction InOut(this Easing.Pattern easingType, int time, int limit, Fraction min, Fraction max)
-            => InOut(easingType, time, limit, max - min) + min;
-        public static Fraction SubInOut(this Easing.Pattern easingType, int time, int limit, Fraction min, Fraction max)
-            => SubInOut(easingType, time, limit, max - min) + min;
+        /// <summary>
+        /// イージングの途中経過値をパターン毎に計算する
+        /// </summary>
+        /// <param name="easingType">イージングの挙動タイプ</param>
+        /// <param name="time">経過時間</param>
+        /// <param name="limit">所要時間</param>
+        /// <param name="max">最大値</param>
+        /// <returns>0スタートでの増加量途中経過値</returns>
+        static Fraction ClacProgress(
+            this (Easing.Pattern pattern, Easing.Bias bias) easingType,
+            int time,
+            int limit,
+            Fraction max)
+        {
+            var pattern = easingType.pattern;
+            var maxNonNull = max ?? 1f;
+            var timeExpired = time == limit;
 
-        public static Fraction In(this Easing.Pattern easingType, int time, int limit, Fraction max = null)
-            => easingType.CalcBase(time == limit ? 1 : time.DividedBy(limit), max);
-        public static Fraction SubIn(this Easing.Pattern easingType, int time, int limit, Fraction max = null)
-            => (max ?? 1f) - easingType.In(time, limit, max ?? 1f);
+            switch(easingType.bias)
+            {
+                case Easing.Bias.In:
+                    return pattern.CalcPattern(timeExpired ? 1 : time.DividedBy(limit), maxNonNull);
+                case Easing.Bias.Out:
+                    return maxNonNull - pattern.CalcPattern(timeExpired ? 0 : (limit - time).DividedBy(limit), maxNonNull);
+                case Easing.Bias.InOut:
+                    var halfLimit = limit / 2;
+                    var halfMax = maxNonNull / 2;
 
-        public static Fraction Out(this Easing.Pattern easingType, int time, int limit, Fraction max = null)
-            => (max ?? 1f) - easingType.CalcBase(time == limit ? 0 : (limit - time).DividedBy(limit), max ?? 1f);
-        public static Fraction SubOut(this Easing.Pattern easingType, int time, int limit, Fraction max = null)
-            => (max ?? 1f) - easingType.Out(time, limit, max ?? 1f);
-
-        public static Fraction InOut(this Easing.Pattern easingType, int time, int limit, Fraction max = null)
-            => time < limit / 2
-            ? easingType.In(time, limit / 2, (max ?? 1f) / 2)
-            : easingType.Out(time - limit / 2, limit / 2, (max ?? 1f) / 2) + (max ?? 1f) / 2;
-        public static Fraction SubInOut(this Easing.Pattern easingType, int time, int limit, Fraction max = null)
-            => (max ?? 1f) - easingType.InOut(time, limit, max ?? 1f);
-
-        static Fraction CalcBase(this Easing.Pattern easingType, Fraction diameter, Fraction max = null)
+                    return time < halfLimit
+                        ? (pattern, Easing.Bias.In).ClacProgress(time, halfLimit, halfMax)
+                        : (pattern, Easing.Bias.Out).ClacProgress(time - halfLimit, halfLimit, halfMax) + halfMax;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(easingType.bias));
+            }
+        }
+        /// <summary>
+        /// イージングパターン毎の増加差分計算
+        /// </summary>
+        /// <param name="pattern">イージングパターン</param>
+        /// <param name="diameter">時間経過割合</param>
+        /// <param name="max">最大値</param>
+        /// <returns>所定の時間経過割合における増加量</returns>
+        static Fraction CalcPattern(this Easing.Pattern pattern, Fraction diameter, Fraction max)
         {
             var maxNonNull = max ?? 1f;
-            switch(easingType)
+            switch(pattern)
             {
                 case Easing.Pattern.Linear:
                     return maxNonNull * diameter;
@@ -87,7 +154,7 @@ namespace Assets.Src.Model.Application.Service
                 case Easing.Pattern.Circular:
                     return -maxNonNull * (Mathf.Sqrt((1 - diameter * diameter).value) - 1);
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(easingType));
+                    throw new ArgumentOutOfRangeException(nameof(pattern));
             }
         }
     }
