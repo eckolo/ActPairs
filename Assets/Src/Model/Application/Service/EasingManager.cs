@@ -70,9 +70,9 @@ namespace Assets.Src.Model.Application.Service
             bool isIncrease = false)
         {
             var increased = easingType.ClacProgress(time, limit, max);
-            var maxNonNull = max ?? 1f;
+            var maxOne = max ?? 1f;
 
-            var progress = isIncrease ? increased : maxNonNull - increased;
+            var progress = isIncrease ? increased : maxOne - increased;
             return progress;
         }
         /// <summary>
@@ -105,25 +105,21 @@ namespace Assets.Src.Model.Application.Service
             Fraction max)
         {
             var pattern = easingType.pattern;
-            var maxNonNull = max ?? 1f;
-            var timeExpired = time == limit;
+            var maxOne = max ?? 1f;
+            var onLimit = time == limit;
+            var halfLimit = limit / 2;
+            var halfMax = maxOne / 2;
 
-            switch(easingType.bias)
+            var increased = easingType.bias switch
             {
-                case Easing.Bias.In:
-                    return pattern.CalcPattern(timeExpired ? 1 : time.DividedBy(limit), maxNonNull);
-                case Easing.Bias.Out:
-                    return maxNonNull - pattern.CalcPattern(timeExpired ? 0 : (limit - time).DividedBy(limit), maxNonNull);
-                case Easing.Bias.InOut:
-                    var halfLimit = limit / 2;
-                    var halfMax = maxNonNull / 2;
-
-                    return time < halfLimit
-                        ? (pattern, Easing.Bias.In).ClacProgress(time, halfLimit, halfMax)
-                        : (pattern, Easing.Bias.Out).ClacProgress(time - halfLimit, halfLimit, halfMax) + halfMax;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(easingType.bias));
-            }
+                Easing.Bias.In => pattern.CalcPattern(onLimit ? 1 : time.DividedBy(limit), maxOne),
+                Easing.Bias.Out => maxOne - pattern.CalcPattern(onLimit ? 0 : (limit - time).DividedBy(limit), maxOne),
+                Easing.Bias.InOut => time < halfLimit
+                    ? (pattern, Easing.Bias.In).ClacProgress(time, halfLimit, halfMax)
+                    : (pattern, Easing.Bias.Out).ClacProgress(time - halfLimit, halfLimit, halfMax) + halfMax,
+                _ => throw new ArgumentOutOfRangeException(nameof(easingType.bias)),
+            };
+            return increased;
         }
         /// <summary>
         /// イージングパターン毎の増加差分計算
@@ -134,28 +130,20 @@ namespace Assets.Src.Model.Application.Service
         /// <returns>所定の時間経過割合における増加量</returns>
         static Fraction CalcPattern(this Easing.Pattern pattern, Fraction diameter, Fraction max)
         {
-            var maxNonNull = max ?? 1f;
-            switch(pattern)
+            var maxOne = max ?? 1f;
+            var increased = pattern switch
             {
-                case Easing.Pattern.Linear:
-                    return maxNonNull * diameter;
-                case Easing.Pattern.Quadratic:
-                    return maxNonNull * diameter * diameter;
-                case Easing.Pattern.Cubic:
-                    return maxNonNull * diameter * diameter * diameter;
-                case Easing.Pattern.Quartic:
-                    return maxNonNull * diameter * diameter * diameter * diameter;
-                case Easing.Pattern.Quintic:
-                    return maxNonNull * diameter * diameter * diameter * diameter * diameter;
-                case Easing.Pattern.Sinusoidal:
-                    return maxNonNull * (1 - Mathf.Cos((diameter * Mathf.PI / 2).value));
-                case Easing.Pattern.Exponential:
-                    return maxNonNull * Mathf.Pow(2, (10 * (diameter - 1)).value);
-                case Easing.Pattern.Circular:
-                    return -maxNonNull * (Mathf.Sqrt((1 - diameter * diameter).value) - 1);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(pattern));
-            }
+                Easing.Pattern.Linear => maxOne * diameter,
+                Easing.Pattern.Quadratic => maxOne * diameter * diameter,
+                Easing.Pattern.Cubic => maxOne * diameter * diameter * diameter,
+                Easing.Pattern.Quartic => maxOne * diameter * diameter * diameter * diameter,
+                Easing.Pattern.Quintic => maxOne * diameter * diameter * diameter * diameter * diameter,
+                Easing.Pattern.Sinusoidal => maxOne * (1 - Mathf.Cos((diameter * Mathf.PI / 2).value)),
+                Easing.Pattern.Exponential => maxOne * Mathf.Pow(2, (10 * (diameter - 1)).value),
+                Easing.Pattern.Circular => -maxOne * (Mathf.Sqrt((1 - diameter * diameter).value) - 1),
+                _ => throw new ArgumentOutOfRangeException(nameof(pattern)),
+            };
+            return increased;
         }
     }
 }
