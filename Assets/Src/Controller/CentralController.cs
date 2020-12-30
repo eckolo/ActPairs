@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+#nullable enable
 namespace Assets.Src.Controller
 {
     /// <summary>

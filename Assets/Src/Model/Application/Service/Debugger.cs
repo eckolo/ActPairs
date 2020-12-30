@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 
+#nullable enable
 namespace Assets.Src.Model.Application.Service
 {
     /// <summary>

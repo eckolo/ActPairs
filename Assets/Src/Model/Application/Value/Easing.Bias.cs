@@ -1,4 +1,5 @@
-﻿namespace Assets.Src.Model.Application.Value
+﻿#nullable enable
+namespace Assets.Src.Model.Application.Value
 {
     public partial class Easing
     {

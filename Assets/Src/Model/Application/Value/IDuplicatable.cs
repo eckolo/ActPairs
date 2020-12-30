@@ -1,4 +1,5 @@
 ﻿
+#nullable enable
 namespace Assets.Src.Model.Application.Value
 {
     /// <summary>

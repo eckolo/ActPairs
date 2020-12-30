@@ -1,5 +1,6 @@
 ﻿using Assets.Src.Model.Application.Value;
 
+#nullable enable
 namespace Assets.Src.Model.Application.Service
 {
     /// <summary>

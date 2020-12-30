@@ -160,7 +160,6 @@ namespace Assets.Src.Model.Application.Service.Test
                 }
             };
             var list3 = new List<ClassMock> { };
-            List<ClassMock> list4 = null;
 
             var list1Copied = list1.Copy();
 
@@ -176,7 +175,6 @@ namespace Assets.Src.Model.Application.Service.Test
             list1Copied[1].IsNot(list2[1]);
 
             list3.Copy().Is(list3);
-            list4.Copy().Is(list4);
         }
         [Test]
         public static void ToPercentage()

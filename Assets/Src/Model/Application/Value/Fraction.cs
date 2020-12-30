@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#nullable enable
 namespace Assets.Src.Model.Application.Value
 {
     /// <summary>
@@ -139,7 +140,7 @@ namespace Assets.Src.Model.Application.Value
         public override bool Equals(object obj)
         {
             var fraction = obj as Fraction;
-            return CompareTo(fraction) == 0;
+            return fraction is Fraction && CompareTo(fraction) == 0;
         }
 
         public override int GetHashCode()

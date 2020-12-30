@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
+#nullable enable
 namespace Assets.Src.Model.Application.Service
 {
     /// <summary>
@@ -95,9 +96,9 @@ namespace Assets.Src.Model.Application.Service
         /// <summary>
         /// 選択肢と選択可能性からランダムで選択肢を選び出す
         /// </summary>
-        public static Result SelectRandom<Result>(this IEnumerable<Result> values, IEnumerable<int> rates = null)
+        public static Result SelectRandom<Result>(this IEnumerable<Result> values, IEnumerable<int>? rates = null)
         {
-            rates = rates ?? values.Select(_ => 1);
+            rates ??= values.Select(_ => 1);
             var ratedatas = values.Zip(rates, (value, rate) => new KeyValuePair<Result, int>(value, rate));
             return SelectRandom(ratedatas);
         }
@@ -134,7 +135,7 @@ namespace Assets.Src.Model.Application.Service
         /// <typeparam name="Type">コピー対象リストの要素タイプ</typeparam>
         /// <param name="origin">コピー対象リスト</param>
         /// <returns>コピー後のリスト</returns>
-        public static List<Type> Copy<Type>(this List<Type> origin) => origin?.Select(value => value).ToList();
+        public static List<Type> Copy<Type>(this List<Type> origin) => origin.Select(value => value).ToList();
 
         /// <summary>
         /// nullableのfloat値を所定の表記（デフォルトで百分率）に直す

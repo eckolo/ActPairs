@@ -2,6 +2,7 @@
 using System;
 using UnityEngine;
 
+#nullable enable
 namespace Assets.Src.Model.Application.Service
 {
     /// <summary>
@@ -33,7 +34,7 @@ namespace Assets.Src.Model.Application.Service
         public static Fraction GetProgress(
             this Easing easing,
             int time,
-            Fraction max = null)
+            Fraction? max = null)
             => (easing.pattern, easing.bias).GetProgress(time, easing.timeRequired, max, easing.isIncrease);
         /// <summary>
         /// イージングの途中経過取得
@@ -66,13 +67,13 @@ namespace Assets.Src.Model.Application.Service
             this (Easing.Pattern pattern, Easing.Bias bias) easingType,
             int time,
             int limit,
-            Fraction max = null,
+            Fraction? max = null,
             bool isIncrease = false)
         {
+            max ??= 1f;
             var increased = easingType.ClacProgress(time, limit, max);
-            var maxOne = max ?? 1f;
 
-            var progress = isIncrease ? increased : maxOne - increased;
+            var progress = isIncrease ? increased : max - increased;
             return progress;
         }
         /// <summary>
@@ -105,15 +106,14 @@ namespace Assets.Src.Model.Application.Service
             Fraction max)
         {
             var pattern = easingType.pattern;
-            var maxOne = max ?? 1f;
             var onLimit = time == limit;
             var halfLimit = limit / 2;
-            var halfMax = maxOne / 2;
+            var halfMax = max / 2;
 
             var increased = easingType.bias switch
             {
-                Easing.Bias.In => pattern.CalcPattern(onLimit ? 1 : time.DividedBy(limit), maxOne),
-                Easing.Bias.Out => maxOne - pattern.CalcPattern(onLimit ? 0 : (limit - time).DividedBy(limit), maxOne),
+                Easing.Bias.In => pattern.CalcPattern(onLimit ? 1 : time.DividedBy(limit), max),
+                Easing.Bias.Out => max - pattern.CalcPattern(onLimit ? 0 : (limit - time).DividedBy(limit), max),
                 Easing.Bias.InOut => time < halfLimit
                     ? (pattern, Easing.Bias.In).ClacProgress(time, halfLimit, halfMax)
                     : (pattern, Easing.Bias.Out).ClacProgress(time - halfLimit, halfLimit, halfMax) + halfMax,
@@ -130,17 +130,16 @@ namespace Assets.Src.Model.Application.Service
         /// <returns>所定の時間経過割合における増加量</returns>
         static Fraction CalcPattern(this Easing.Pattern pattern, Fraction diameter, Fraction max)
         {
-            var maxOne = max ?? 1f;
             var increased = pattern switch
             {
-                Easing.Pattern.Linear => maxOne * diameter,
-                Easing.Pattern.Quadratic => maxOne * diameter * diameter,
-                Easing.Pattern.Cubic => maxOne * diameter * diameter * diameter,
-                Easing.Pattern.Quartic => maxOne * diameter * diameter * diameter * diameter,
-                Easing.Pattern.Quintic => maxOne * diameter * diameter * diameter * diameter * diameter,
-                Easing.Pattern.Sinusoidal => maxOne * (1 - Mathf.Cos((diameter * Mathf.PI / 2).value)),
-                Easing.Pattern.Exponential => maxOne * Mathf.Pow(2, (10 * (diameter - 1)).value),
-                Easing.Pattern.Circular => -maxOne * (Mathf.Sqrt((1 - diameter * diameter).value) - 1),
+                Easing.Pattern.Linear => max * diameter,
+                Easing.Pattern.Quadratic => max * diameter * diameter,
+                Easing.Pattern.Cubic => max * diameter * diameter * diameter,
+                Easing.Pattern.Quartic => max * diameter * diameter * diameter * diameter,
+                Easing.Pattern.Quintic => max * diameter * diameter * diameter * diameter * diameter,
+                Easing.Pattern.Sinusoidal => max * (1 - Mathf.Cos((diameter * Mathf.PI / 2).value)),
+                Easing.Pattern.Exponential => max * Mathf.Pow(2, (10 * (diameter - 1)).value),
+                Easing.Pattern.Circular => -max * (Mathf.Sqrt((1 - diameter * diameter).value) - 1),
                 _ => throw new ArgumentOutOfRangeException(nameof(pattern)),
             };
             return increased;
