@@ -208,7 +208,7 @@ namespace Assets.Tests
             {
                 var dumper = new ExpressionDumper<T>(value, predicate.Parameters.Single());
                 dumper.Visit(predicate);
-                var dump = string.Join(", ", dumper.Members.Select(kvp => kvp.Key + " = " + kvp.Value));
+                var dump = string.Join(", ", dumper.members.Select(kvp => kvp.Key + " = " + kvp.Value));
                 msg = string.Format("\r\n{0} = {1}\r\n{2}\r\n{3}{4}",
                     paramName, value, dump, predicate,
                     string.IsNullOrEmpty(message) ? "" : ", " + message);
@@ -298,24 +298,24 @@ namespace Assets.Tests
 
         private class ReflectAccessor<T>
         {
-            public Func<object> GetValue { get; private set; }
-            public Action<object> SetValue { get; private set; }
+            public Func<object> getValue { get; private set; }
+            public Action<object> setValue { get; private set; }
 
             public ReflectAccessor(T target, string name)
             {
                 var field = typeof(T).GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 if(field != null)
                 {
-                    GetValue = () => field.GetValue(target);
-                    SetValue = value => field.SetValue(target, value);
+                    getValue = () => field.GetValue(target);
+                    setValue = value => field.SetValue(target, value);
                     return;
                 }
 
                 var prop = typeof(T).GetProperty(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 if(prop != null)
                 {
-                    GetValue = () => prop.GetValue(target, null);
-                    SetValue = value => prop.SetValue(target, value, null);
+                    getValue = () => prop.GetValue(target, null);
+                    setValue = value => prop.SetValue(target, value, null);
                     return;
                 }
 
@@ -525,14 +525,14 @@ namespace Assets.Tests
             public override bool TrySetMember(SetMemberBinder binder, object value)
             {
                 var accessor = new ReflectAccessor<T>(target, binder.Name);
-                accessor.SetValue(value);
+                accessor.setValue(value);
                 return true;
             }
 
             public override bool TryGetMember(GetMemberBinder binder, out object result)
             {
                 var accessor = new ReflectAccessor<T>(target, binder.Name);
-                result = accessor.GetValue();
+                result = accessor.getValue();
                 return true;
             }
 
@@ -691,21 +691,21 @@ namespace Assets.Tests
             ParameterExpression param;
             T target;
 
-            public Dictionary<string, object> Members { get; private set; }
+            public Dictionary<string, object> members { get; private set; }
 
             public ExpressionDumper(T target, ParameterExpression param)
             {
                 this.target = target;
                 this.param = param;
-                this.Members = new Dictionary<string, object>();
+                this.members = new Dictionary<string, object>();
             }
 
             protected override System.Linq.Expressions.Expression VisitMember(MemberExpression node)
             {
-                if(node.Expression == param && !Members.ContainsKey(node.Member.Name))
+                if(node.Expression == param && !members.ContainsKey(node.Member.Name))
                 {
                     var accessor = new ReflectAccessor<T>(target, node.Member.Name);
-                    Members.Add(node.Member.Name, accessor.GetValue());
+                    members.Add(node.Member.Name, accessor.getValue());
                 }
 
                 return base.VisitMember(node);
