@@ -15,7 +15,7 @@ namespace Assets.Src.Model.Application.Value
     {
         public ViewAction(
             IList<(IViewKey, ViewShape)> viewList,
-            ViewLayout layout,
+            IViewLayout layout,
             Easing easing,
             bool? willBeDestroyed = null)
         {
@@ -32,7 +32,7 @@ namespace Assets.Src.Model.Application.Value
         /// <summary>
         /// 動作対象目標場所
         /// </summary>
-        public ViewLayout layout { get; }
+        public IViewLayout layout { get; }
         /// <summary>
         /// 動作処理のイージング
         /// </summary>
