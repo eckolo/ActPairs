@@ -28,7 +28,7 @@ namespace Assets.Src.Model.Application.Value
         /// <summary>
         /// 動作対象ビューオブジェクトと形状のセット一覧
         /// </summary>
-        public IList<(IViewKey, ViewShape)> viewList { get; }
+        public IList<(IViewKey key, ViewShape shape)> viewList { get; }
         /// <summary>
         /// 動作対象目標場所
         /// </summary>
